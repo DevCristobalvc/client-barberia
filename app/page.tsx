@@ -10,6 +10,8 @@ import { useEffect, useRef, useState } from "react";
 const SHOP_ID = process.env.NEXT_PUBLIC_SHOP_ID || "00000000-0000-0000-0000-000000000001";
 
 const INITIAL = "¡Hola! 👋 Soy SofIA. ¿En qué te puedo ayudar hoy?";
+const FREE_MSG_LIMIT = 4; // mensajes sin sesión
+const AUTH_WALL_MSG  = "Para seguir chateando con SofIA necesitas iniciar sesión o crear una cuenta. ¡Es gratis y solo toma un momento! 🔐";
 
 interface Message {
   id: string;
@@ -32,6 +34,8 @@ export default function ClientPage() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  // Contador de mensajes enviados por el usuario sin sesión
+  const [guestMsgCount, setGuestMsgCount] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef  = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -57,17 +61,29 @@ export default function ClientPage() {
     const text = input.trim();
     if (!text || loading) return;
 
-    // Si la acción requiere auth y no está logueado
+    // Muro de autenticación: sin sesión, después de FREE_MSG_LIMIT mensajes
+    if (!user && guestMsgCount >= FREE_MSG_LIMIT) {
+      setShowAuthPrompt(true);
+      // Si ya está el mensaje del muro, no lo repita
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg?.content !== AUTH_WALL_MSG) {
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now().toString(), role: "user", content: text },
+          { id: (Date.now() + 1).toString(), role: "assistant", content: AUTH_WALL_MSG },
+        ]);
+      }
+      setInput("");
+      return;
+    }
+
+    // Si la acción puntual requiere auth
     if (!user && needsAuth(text)) {
       setShowAuthPrompt(true);
       setMessages((prev) => [
         ...prev,
         { id: Date.now().toString(), role: "user", content: text },
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: "Para reservar o gestionar citas necesito que inicies sesión primero. ¿Te registras o ya tienes cuenta? 🔐",
-        },
+        { id: (Date.now() + 1).toString(), role: "assistant", content: "Para reservar o gestionar citas necesito que inicies sesión primero. ¿Te registras o ya tienes cuenta?" },
       ]);
       setInput("");
       return;
@@ -77,6 +93,8 @@ export default function ClientPage() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
+    // Contar mensaje solo si no hay sesión
+    if (!user) setGuestMsgCount((c) => c + 1);
 
     const assistantId = (Date.now() + 1).toString();
     setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
@@ -125,6 +143,7 @@ export default function ClientPage() {
   const reset = () => {
     setMessages([{ id: "0", role: "assistant", content: INITIAL }]);
     setShowAuthPrompt(false);
+    if (!user) setGuestMsgCount(0); // reiniciar contador en nueva conversación
   };
 
   return (
