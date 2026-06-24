@@ -35,6 +35,20 @@ body {
 
 ::selection { background-color: rgba(212, 175, 55, 0.25); }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #111111; }
-::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 2px; }
+/* Ocultar scrollbars globalmente en mobile */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
+
+/* Fix autofill del browser — evita texto negro en fondo oscuro */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #F5F5F5 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #161616 inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Selects con color correcto en iOS */
+select { color: #F5F5F5; background-color: #1A1A1A; }

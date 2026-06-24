@@ -1,8 +1,9 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { Scissors, Send, RotateCcw, User, LogIn } from "lucide-react";
+import { Scissors, Send, RotateCcw, User, LogIn, LogOut, Home, ChevronUp, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const SHOP_ID = process.env.NEXT_PUBLIC_SHOP_ID || "00000000-0000-0000-0000-000000000001";
@@ -31,8 +32,10 @@ export default function ClientPage() {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef  = useRef<HTMLTextAreaElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -124,7 +127,7 @@ export default function ClientPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-lg mx-auto">
+    <div className="flex flex-col h-screen max-w-lg mx-auto overflow-hidden">
       {/* Header */}
       <header className="flex-shrink-0 border-b border-[#1A1A1A] bg-[#0A0A0A] safe-top">
         <div className="px-4 h-14 flex items-center justify-between">
@@ -137,19 +140,36 @@ export default function ClientPage() {
               <p className="text-xs text-emerald-400 mt-0.5">● En línea</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            {/* Volver a la landing */}
+            <a href="https://barberia-flax-chi.vercel.app" target="_blank" rel="noopener noreferrer"
+              className="p-1.5 rounded-lg hover:bg-[#1A1A1A] text-[#888888] hover:text-[#F5F5F5] transition-colors" title="Inicio">
+              <Home className="w-4 h-4" />
+            </a>
+
             {user ? (
-              <Link href="/perfil" className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1A1A1A] text-xs text-[#F5F5F5] hover:bg-[#2A2A2A] transition-colors">
-                <User className="w-3.5 h-3.5 text-gold" />
-                {user.name.split(" ")[0]}
-              </Link>
+              <>
+                <Link href="/perfil"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1A1A1A] text-xs text-[#F5F5F5] hover:bg-[#2A2A2A] transition-colors">
+                  <User className="w-3.5 h-3.5 text-gold" />
+                  {user.name.split(" ")[0]}
+                </Link>
+                <button
+                  onClick={async () => { await supabase.auth.signOut(); setUser(null); router.refresh(); }}
+                  className="p-1.5 rounded-lg hover:bg-red-900/20 text-[#888888] hover:text-red-400 transition-colors" title="Cerrar sesión">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </>
             ) : (
-              <Link href="/login" className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-gold/30 text-gold text-xs hover:bg-gold/10 transition-colors">
+              <Link href="/login"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-gold/30 text-gold text-xs hover:bg-gold/10 transition-colors">
                 <LogIn className="w-3.5 h-3.5" />
                 Ingresar
               </Link>
             )}
-            <button onClick={reset} className="p-1.5 rounded-lg hover:bg-[#1A1A1A] text-[#888888] hover:text-[#F5F5F5] transition-colors">
+
+            <button onClick={reset}
+              className="p-1.5 rounded-lg hover:bg-[#1A1A1A] text-[#888888] hover:text-[#F5F5F5] transition-colors" title="Nueva conversación">
               <RotateCcw className="w-4 h-4" />
             </button>
           </div>
@@ -157,7 +177,8 @@ export default function ClientPage() {
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Messages — scrollable, scrollbar oculta */}
+      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" ref={scrollRef as React.RefObject<HTMLDivElement>}>
         <div className="px-4 py-4 space-y-3">
           <div className="text-center py-1">
             <span className="text-xs text-[#555555] bg-[#111111] border border-[#2A2A2A] rounded-full px-3 py-1">
@@ -205,6 +226,22 @@ export default function ClientPage() {
       </div>
 
       {/* Input */}
+      {/* Scroll nav buttons */}
+      <div className="flex-shrink-0 flex justify-end gap-1.5 px-4 py-1 bg-[#0A0A0A]">
+        <button
+          onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+          className="p-1 rounded-lg bg-[#1A1A1A] text-[#555555] hover:text-[#F5F5F5] transition-colors"
+          title="Ir al inicio">
+          <ChevronUp className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => bottomRef.current?.scrollIntoView({ behavior: "smooth" })}
+          className="p-1 rounded-lg bg-[#1A1A1A] text-[#555555] hover:text-[#F5F5F5] transition-colors"
+          title="Ir al final">
+          <ChevronDown className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
       <div className="flex-shrink-0 border-t border-[#1A1A1A] bg-[#0A0A0A] safe-bottom">
         <div className="px-4 py-3">
           <div className="flex items-end gap-2 bg-[#111111] border border-[#2A2A2A] rounded-2xl px-3 py-2 focus-within:border-gold/40 transition-colors">
