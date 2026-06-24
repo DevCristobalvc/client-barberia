@@ -1,7 +1,8 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { Scissors, Send, RotateCcw, User, LogIn, LogOut, Home, ChevronUp, ChevronDown } from "lucide-react";
+import { Send, RotateCcw, User, LogIn, LogOut, Home, ChevronUp, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -132,8 +133,8 @@ export default function ClientPage() {
       <header className="flex-shrink-0 border-b border-[#1A1A1A] bg-[#0A0A0A] safe-top">
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center">
-              <Scissors className="w-3.5 h-3.5 text-gold" />
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-gold/30 flex-shrink-0">
+              <Image src="/sofia-web.png" alt="SofIA" width={32} height={32} className="object-cover object-top w-full h-full" />
             </div>
             <div>
               <p className="text-sm font-semibold leading-none">SofIA</p>
@@ -189,8 +190,8 @@ export default function ClientPage() {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
-                <div className="w-6 h-6 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center mr-2 mt-1 flex-shrink-0">
-                  <Scissors className="w-2.5 h-2.5 text-gold" />
+                <div className="w-6 h-6 rounded-full overflow-hidden border border-gold/30 mr-2 mt-1 flex-shrink-0">
+                  <Image src="/sofia-web.png" alt="SofIA" width={24} height={24} className="object-cover object-top w-full h-full" />
                 </div>
               )}
               <div className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
