@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Saira_Condensed } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const saira = Saira_Condensed({ variable: "--font-saira", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: "BarberIA",
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${saira.variable} antialiased bg-[#0A0A0A] text-[#F5F5F5] h-full`} style={{ fontFamily: "var(--font-saira), sans-serif" }}>
+      <body className={`${inter.variable} antialiased bg-[#0A0A0A] text-[#F5F5F5] h-full`} style={{ fontFamily: "var(--font-inter), sans-serif" }}>
         {children}
       </body>
     </html>
