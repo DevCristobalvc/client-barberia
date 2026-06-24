@@ -29,7 +29,9 @@ export default function MisCitasPage() {
       if (!data.user) { router.push("/login?next=/mis-citas"); return; }
 
       try {
-        const res = await fetch(`${API}/api/v1/appointments/${SHOP_ID}`);
+        const res = await fetch(`${API}/api/v1/appointments/${SHOP_ID}`, {
+          headers: API.includes("ngrok") ? { "ngrok-skip-browser-warning": "true" } : {},
+        });
         if (res.ok) {
           setAppointments(await res.json());
         } else {

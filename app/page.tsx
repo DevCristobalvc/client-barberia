@@ -81,7 +81,10 @@ export default function ClientPage() {
       const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const resp = await fetch(`${API}/api/v1/webhook/message/sync`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(API.includes("ngrok") ? { "ngrok-skip-browser-warning": "true" } : {}),
+        },
         body: JSON.stringify({
           shop_id: SHOP_ID,
           phone: user ? `+57${user.email.split("@")[0]}` : "+57000000000",
