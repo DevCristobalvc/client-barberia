@@ -142,7 +142,7 @@ export default function ClientPage() {
           </div>
           <div className="flex items-center gap-1.5">
             {/* Volver a la landing */}
-            <a href="https://bia-landing.vercel.app" target="_blank" rel="noopener noreferrer"
+            <a href="https://site-barberia.vercel.app" target="_blank" rel="noopener noreferrer"
               className="p-1.5 rounded-lg hover:bg-[#1A1A1A] text-[#888888] hover:text-[#F5F5F5] transition-colors" title="Inicio">
               <Home className="w-4 h-4" />
             </a>
